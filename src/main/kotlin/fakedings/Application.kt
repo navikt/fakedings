@@ -1,25 +1,8 @@
 package fakedings
 
-import com.nimbusds.jose.JOSEObjectType
-import com.nimbusds.jose.JWSAlgorithm
-import com.nimbusds.jose.JWSHeader
-import com.nimbusds.jose.crypto.RSASSASigner
-import com.nimbusds.jose.jwk.KeyUse
-import com.nimbusds.jose.jwk.RSAKey
-import com.nimbusds.jwt.JWTClaimsSet
-import com.nimbusds.jwt.PlainJWT
-import com.nimbusds.jwt.SignedJWT
-import java.security.KeyPairGenerator
-import java.security.interfaces.RSAPrivateKey
-import java.security.interfaces.RSAPublicKey
-import java.time.Instant
-import java.util.Date
-import java.util.UUID
 import mu.KotlinLogging
 import no.nav.security.mock.oauth2.MockOAuth2Server
 import no.nav.security.mock.oauth2.OAuth2Config
-import no.nav.security.mock.oauth2.token.DefaultOAuth2TokenCallback
-import no.nav.security.mock.oauth2.token.OAuth2TokenCallback
 import org.http4k.core.Method
 import org.http4k.core.Response
 import org.http4k.core.Status
@@ -66,5 +49,3 @@ fun main() {
         }
     ).asServer(Netty(8080)).start()
 }
-
-

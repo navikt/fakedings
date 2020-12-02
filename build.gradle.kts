@@ -5,18 +5,20 @@ val mockOauth2ServerVersion = "0.2.1"
 val junitJupiterVersion = "5.7.0"
 val kotlinVersion = "1.4.20"
 val kotestVersion = "4.3.1"
-
+val mainClassKt = "fakedings.ApplicationKt"
 
 plugins {
     application
     kotlin("jvm") version "1.4.0"
     id("org.jmailen.kotlinter") version "3.2.0"
+    id("com.github.johnrengelman.shadow") version "6.0.0"
     id("com.github.ben-manes.versions") version "0.36.0"
     id("se.patrikerdes.use-latest-versions") version "0.2.15"
 }
 
 application {
-    mainClass.set("fakedings.ApplicationKt")
+    mainClassName = mainClassKt
+    mainClass.set(mainClassKt)
 }
 
 java {
@@ -61,6 +63,18 @@ tasks.javadoc {
 tasks {
     withType<org.jmailen.gradle.kotlinter.tasks.LintTask> {
         dependsOn("formatKotlin")
+    }
+
+    withType<com.github.jengelman.gradle.plugins.shadow.tasks.ShadowJar> {
+        archiveBaseName.set("app")
+        archiveClassifier.set("")
+        manifest {
+            attributes(
+                mapOf(
+                    "Main-Class" to mainClassKt
+                )
+            )
+        }
     }
 
     withType<org.jetbrains.kotlin.gradle.tasks.KotlinCompile> {

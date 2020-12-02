@@ -88,5 +88,5 @@ val idportenTokenCallback: OAuth2TokenCallback =
             "at_hash" to UUID.randomUUID().toString(),
             "amr" to listOf("BankId"),
 
-            )
+        )
     )
