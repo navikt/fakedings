@@ -1,51 +1,82 @@
 package fakedings
 
 import mu.KotlinLogging
+import no.nav.security.mock.oauth2.MockOAuth2Dispatcher
 import no.nav.security.mock.oauth2.MockOAuth2Server
-import no.nav.security.mock.oauth2.OAuth2Config
-import org.http4k.core.Method
-import org.http4k.core.Response
-import org.http4k.core.Status
-import org.http4k.routing.bind
-import org.http4k.routing.routes
-import org.http4k.server.Netty
-import org.http4k.server.asServer
+import okhttp3.mockwebserver.Dispatcher
+import okhttp3.mockwebserver.MockResponse
+import okhttp3.mockwebserver.RecordedRequest
 
 private val log = KotlinLogging.logger { }
 
+typealias PathDispather = (RecordedRequest) -> MockResponse
+
+val rsaKey = createRSAKey("clientAssertionKey")
+
 fun main() {
+    val mockOAuth2Server = MockOAuth2Server()
 
-    val mockOAuth2Server = MockOAuth2Server(
-        OAuth2Config(
-            interactiveLogin = false
-        )
-    )
-    mockOAuth2Server.start(port = 1111)
-    val rsaKey = createRSAKey("generated")
-    routes(
-        "token/client_assertion" bind Method.GET to { req ->
-
-            val clientId: String = req.query("client_id") ?: "notfound"
-
+    val pathDispatchers: Map<String, PathDispather> = mapOf(
+        "/login/client_assertion" to {
+            val clientId: String = it.param("client_id") ?: "notfound"
             val jwt = clientAssertion(
                 clientId,
                 mockOAuth2Server.tokenEndpointUrl("tokenx").toString(),
                 rsaKey
             )
-
-            Response(Status.OK).body(jwt.serialize())
+            response(200, jwt.serialize())
         },
-        "/token/idporten" bind Method.GET to { req ->
-            val pid: String = req.query("pid") ?: "notfound"
-            val acr: String = req.query("acr") ?: "Level4"
+        "/login/idporten" to {
+            val pid: String = it.param("pid") ?: "notfound"
+            val acr: String = it.param("acr") ?: "Level4"
             val token = mockOAuth2Server.issueIdportenToken(pid, acr)
-            Response(Status.OK).body(token.serialize())
+            response(200, token.serialize())
         },
-        "/token/aad" bind Method.GET to { req ->
-            val preferredUsername: String = req.query("preferred_username") ?: "notfound"
-            val name: String = req.query("name") ?: "notfound"
+        "/login/aad" to { req ->
+            val preferredUsername: String = req.param("preferred_username") ?: "notfound"
+            val name: String = req.param("name") ?: "notfound"
             val token = mockOAuth2Server.issueAADToken(preferredUsername, name)
-            Response(Status.OK).body(token.serialize())
+            response(200, token.serialize())
         }
-    ).asServer(Netty(8080)).start()
+    )
+
+    mockOAuth2Server.dispatcher = DelegatingDispatcher(
+        MockOAuth2Dispatcher(mockOAuth2Server.config),
+        pathDispatchers
+    )
+
+    mockOAuth2Server.start(port = 1111)
 }
+
+class DelegatingDispatcher(
+    val defaultDispatcher: Dispatcher,
+    val pathDispatchers: Map<String, (RecordedRequest) -> MockResponse> = emptyMap()
+) : Dispatcher() {
+    override fun dispatch(request: RecordedRequest): MockResponse {
+        return pathDispatchers[request.toPath()]
+            ?.invoke(request)
+            ?: defaultDispatcher.dispatch(request)
+    }
+}
+
+internal fun response(status: Int, body: String? = null): MockResponse =
+    MockResponse()
+        .setResponseCode(status)
+        .apply {
+            body?.let { setBody(it) }
+        }
+
+internal fun RecordedRequest.toPath(): String? =
+    this.requestUrl?.pathSegments?.joinToString("/")
+
+internal fun RecordedRequest.param(name: String): String? =
+    this.requestUrl?.queryParameter(name)
+
+internal infix fun RecordedRequest.shouldHavePath(path: String): Boolean =
+    this.requestUrl?.pathSegments == path.toPathSegments()
+
+internal fun String.toPathSegments(): List<String> =
+    this.removePrefix("/")
+        .removeSuffix("/")
+        .split("/")
+        .toList()
