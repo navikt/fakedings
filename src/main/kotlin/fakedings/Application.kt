@@ -1,5 +1,7 @@
 package fakedings
 
+import java.net.InetAddress
+import java.net.InetSocketAddress
 import mu.KotlinLogging
 import no.nav.security.mock.oauth2.MockOAuth2Dispatcher
 import no.nav.security.mock.oauth2.MockOAuth2Server
@@ -17,6 +19,9 @@ fun main() {
     val mockOAuth2Server = MockOAuth2Server()
 
     val pathDispatchers: Map<String, PathDispather> = mapOf(
+        "/internal/isalive" to {
+          response(200, "alive")
+        },
         "/login/client_assertion" to {
             val clientId: String = it.param("client_id") ?: "notfound"
             val jwt = clientAssertion(
@@ -45,15 +50,23 @@ fun main() {
         pathDispatchers
     )
 
-    mockOAuth2Server.start(port = 1111)
+    mockOAuth2Server.start(port = Config.port)
+    Runtime.getRuntime().addShutdownHook(object : Thread() {
+        override fun run() {
+            mockOAuth2Server.shutdown()
+        }
+    })
 }
 
 class DelegatingDispatcher(
     val defaultDispatcher: Dispatcher,
-    val pathDispatchers: Map<String, (RecordedRequest) -> MockResponse> = emptyMap()
+    val pathDispatchers: Map<String, PathDispather> = emptyMap()
 ) : Dispatcher() {
     override fun dispatch(request: RecordedRequest): MockResponse {
-        return pathDispatchers[request.toPath()]
+        log.debug("path: ${request.toPath()}")
+        return pathDispatchers[request.toPath()]?.also {
+
+        }
             ?.invoke(request)
             ?: defaultDispatcher.dispatch(request)
     }
@@ -67,7 +80,7 @@ internal fun response(status: Int, body: String? = null): MockResponse =
         }
 
 internal fun RecordedRequest.toPath(): String? =
-    this.requestUrl?.pathSegments?.joinToString("/")
+    this.requestUrl?.pathSegments?.joinToString("/", "/")
 
 internal fun RecordedRequest.param(name: String): String? =
     this.requestUrl?.queryParameter(name)
@@ -80,3 +93,14 @@ internal fun String.toPathSegments(): List<String> =
         .removeSuffix("/")
         .split("/")
         .toList()
+
+internal fun String.fromEnv(): String? = System.getenv(this)
+internal fun String.fromEnvOrFail(): String = fromEnv() ?: throw RuntimeException("could not find environment var $this")
+
+object Config {
+    val host: InetAddress = "OAUTH2_SERVER_HOST".fromEnv()?.let {
+        InetAddress.getByName(it)
+    } ?: InetSocketAddress(0).address
+
+    val port: Int = "OAUTH2_SERVER_PORT".fromEnv()?.toInt() ?: 8080
+}

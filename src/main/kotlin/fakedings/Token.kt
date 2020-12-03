@@ -15,8 +15,6 @@ import java.time.Instant
 import java.util.Date
 import java.util.UUID
 import no.nav.security.mock.oauth2.MockOAuth2Server
-import no.nav.security.mock.oauth2.token.DefaultOAuth2TokenCallback
-import no.nav.security.mock.oauth2.token.OAuth2TokenCallback
 
 internal fun MockOAuth2Server.issueIdportenToken(pid: String, acr: String) =
     issueToken(
@@ -80,13 +78,3 @@ internal fun createRSAKey(keyID: String) =
             .keyID(keyID)
             .build()
     }
-
-val idportenTokenCallback: OAuth2TokenCallback =
-    DefaultOAuth2TokenCallback(
-        issuerId = "idporten",
-        claims = mapOf(
-            "at_hash" to UUID.randomUUID().toString(),
-            "amr" to listOf("BankId"),
-
-        )
-    )

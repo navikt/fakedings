@@ -1,0 +1,5 @@
+app: fakedings
+namespace: plattformsikkerhet
+team: plattformsikkerhet
+ingresses:
+  - https://fakedings.dev-gcp.nais.io
