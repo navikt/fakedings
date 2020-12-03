@@ -50,7 +50,7 @@ fun main() {
         pathDispatchers
     )
 
-    mockOAuth2Server.start(port = Config.port)
+    mockOAuth2Server.start(InetSocketAddress(0).address, port = Config.port)
     Runtime.getRuntime().addShutdownHook(object : Thread() {
         override fun run() {
             mockOAuth2Server.shutdown()
