@@ -8,44 +8,36 @@ import com.nimbusds.jose.jwk.KeyUse
 import com.nimbusds.jose.jwk.RSAKey
 import com.nimbusds.jwt.JWTClaimsSet
 import com.nimbusds.jwt.SignedJWT
+import com.nimbusds.oauth2.sdk.AuthorizationGrant
+import com.nimbusds.oauth2.sdk.GrantType
+import com.nimbusds.oauth2.sdk.TokenRequest
+import java.net.URI
 import java.security.KeyPairGenerator
 import java.security.interfaces.RSAPrivateKey
 import java.security.interfaces.RSAPublicKey
+import java.time.Duration
 import java.time.Instant
 import java.util.Date
-import java.util.UUID
 import no.nav.security.mock.oauth2.MockOAuth2Server
+import no.nav.security.mock.oauth2.token.DefaultOAuth2TokenCallback
+import okhttp3.HttpUrl
 
-internal fun MockOAuth2Server.issueIdportenToken(pid: String, acr: String) =
-    issueToken(
-        issuerId = "idporten",
-        subject = UUID.randomUUID().toString(),
-        claims = mapOf(
-            "at_hash" to UUID.randomUUID().toString(),
-            "amr" to listOf("BankId"),
-            "pid" to pid,
-            "locale" to "nb",
-            "acr" to acr,
-            "sid" to UUID.randomUUID().toString(),
-            "auth_time" to Date.from(Instant.now())
+class MockGrant : AuthorizationGrant(GrantType("MockGrant")) {
+    override fun toParameters(): MutableMap<String, MutableList<String>> = mutableMapOf()
+}
+
+internal fun MockOAuth2Server.anyToken(issuerUrl: HttpUrl, claims: Map<String, Any>, expiry: Duration = Duration.ofHours(1)): SignedJWT {
+    val jwtClaimsSet = claims.toJwtClaimsSet()
+    return this.config.tokenProvider.exchangeAccessToken(
+        TokenRequest(URI.create("http://mockgrant"), MockGrant()),
+        issuerUrl,
+        jwtClaimsSet,
+        DefaultOAuth2TokenCallback(
+            audience = jwtClaimsSet.audience,
+            expiry = expiry.toMillis()
         )
     )
-
-internal fun MockOAuth2Server.issueAADToken(preferredUsername: String, name: String) =
-    issueToken(
-        issuerId = "aad",
-        subject = UUID.randomUUID().toString(),
-        claims = mapOf(
-            "aio" to UUID.randomUUID().toString(),
-            "azpacr" to "1",
-            "azp" to "client id på den som spør",
-            "name" to name,
-            "oid" to UUID.randomUUID().toString(),
-            "preferred_username" to preferredUsername,
-            "scp" to "User.Read",
-            "ver" to "2.0"
-        )
-    )
+}
 
 internal fun clientAssertion(clientId: String, audience: String, rsaKey: RSAKey) =
     JWTClaimsSet.Builder()
@@ -78,3 +70,11 @@ internal fun createRSAKey(keyID: String) =
             .keyID(keyID)
             .build()
     }
+
+internal fun Map<String, Any>.toJwtClaimsSet(): JWTClaimsSet =
+    JWTClaimsSet.Builder()
+        .apply {
+            this@toJwtClaimsSet.forEach {
+                this.claim(it.key, it.value)
+            }
+        }.build()
