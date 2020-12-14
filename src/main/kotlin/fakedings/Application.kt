@@ -9,6 +9,7 @@ import mu.KotlinLogging
 import no.nav.security.mock.oauth2.MockOAuth2Dispatcher
 import no.nav.security.mock.oauth2.MockOAuth2Server
 import no.nav.security.mock.oauth2.extensions.asOAuth2HttpRequest
+import no.nav.security.mock.oauth2.extensions.toIssuerUrl
 import okhttp3.Headers
 import okhttp3.mockwebserver.Dispatcher
 import okhttp3.mockwebserver.MockResponse
@@ -34,10 +35,11 @@ fun main() {
             ok(jwt.serialize())
         },
         "/fake/idporten" to {
+            val req = it.asOAuth2HttpRequest()
             val pid: String = it.param("pid") ?: "notfound"
             val acr: String = it.param("acr") ?: "Level4"
             val token = mockOAuth2Server.anyToken(
-                mockOAuth2Server.issuerUrl("idporten-fake"),
+                req.url.toIssuerUrl(),
                 mapOf(
                     "sub" to UUID.randomUUID().toString(),
                     "aud" to "notfound",
@@ -53,10 +55,11 @@ fun main() {
             ok(token.serialize())
         },
         "/fake/aad" to {
+            val req = it.asOAuth2HttpRequest()
             val preferredUsername: String = it.param("preferred_username") ?: "notfound"
             val name: String = it.param("name") ?: "notfound"
             val token = mockOAuth2Server.anyToken(
-                mockOAuth2Server.issuerUrl("aad-fake"),
+                req.url.toIssuerUrl(),
                 mapOf(
                     "sub" to UUID.randomUUID().toString(),
                     "aud" to "notfound",
@@ -75,10 +78,10 @@ fun main() {
         "/fake/custom" to {
             val req = it.asOAuth2HttpRequest()
             val token = mockOAuth2Server.anyToken(
-                mockOAuth2Server.issuerUrl("custom-fake"),
+                req.url.toIssuerUrl(),
                 req.formParameters.map
             )
-            ok(token.jwtClaimsSet.toJSONObject().toJSONString())
+            ok(token.serialize())
         }
     )
 
