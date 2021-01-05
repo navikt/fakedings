@@ -61,6 +61,25 @@ eyJraWQiOiJtb2NrLW9hdXRoM......
 ```    
 [Sample token](https://jwt.io?token=eyJraWQiOiJjbGllbnRBc3NlcnRpb25LZXkiLCJ0eXAiOiJKV1QiLCJhbGciOiJSUzI1NiJ9.eyJzdWIiOiJzb21lY2xpZW50aWQiLCJhdWQiOiJodHRwczpcL1wvdG9rZW5kaW5ncy5kZXYtZ2NwLm5haXMuaW9cL3Rva2VuIiwibmJmIjoxNjA5ODM4MzMzLCJpc3MiOiJzb21lY2xpZW50aWQiLCJleHAiOjE2MDk4Mzg0MzMsImlhdCI6MTYwOTgzODMzM30.CmGdB8XV4kO1qyywC401uD74KQ1XfjJ36dkpT4JWtmNya1yEh5JOYGXtXOttWu1JMQngxTKRhEAajosfiubGX3L9fyfFjrSGeB-9AmbRw_2A_5rhVHlI9EbdnvdQ0KMmZLLNeZa9FBNyxNwgA0dDBiy553ipp_aezGiM7km9LjA5cd8sws0dZulknrlUWQRjMOt-b8xYqd7yOwVQpPjU4qKP6_a_mE_o66FHvm68PDx6Q6rbWcSX6epNXs_nDVK2SlCcVloZSRtot9SG82d4M0V_jO55BDu-iP8aC3IFxCl3zgAmBB4qdsWW-AL9PA91_hOGoUb5If5eldj1E1vxQw)
 
+#### HTTP GET - Fake TokenX token
+
+https://fakedings.dev-gcp.nais.io/fake/tokenx
+
+``` http request
+GET /fake/tokenx
+    ?client_id=someclientid
+    &aud=dev-gcp:targetteam:targetapp
+    &acr=Level4
+    &pid=12345678910
+
+Host: fakedings.dev-gcp.nais.io
+```
+Response body:
+``` 
+eyJraWQiOiJtb2NrLW9hdXRoM......
+```    
+[Sample token](https://jwt.io?token=)
+
 #### HTTP POST - Fake any token, i.e. you can post any claims you want
 
 https://fakedings.dev-gcp.nais.io/fake/custom

@@ -75,6 +75,36 @@ fun main() {
             )
             ok(token.serialize())
         },
+        "/fake/tokenx" to {
+            val req = it.asOAuth2HttpRequest()
+            val clientId = it.param("client_id") ?: "notfound"
+            val pid = it.param("pid") ?: "notfound"
+            val aud = it.param("aud") ?: "notfound"
+            val acr = it.param("acr") ?: "notfound"
+
+            val token = mockOAuth2Server.anyToken(
+                req.url.toIssuerUrl(),
+                mapOf(
+                    "sub" to UUID.randomUUID().toString(),
+                    "client_amr" to "client_secret_post",
+                    "pid" to pid,
+                    "token_type" to "Bearer",
+                    "client_id" to clientId,
+                    "aud" to aud,
+                    "acr" to acr,
+                    "idp" to "https://fakedings.dev-gcp.nais.io/fake/idporten",
+                    "scope" to "openid",
+                    "client_orgno" to "889640782",
+                    "jti" to "97f580a6-b479-426d-876b-267aa9848e2e",
+                    "consumer" to listOf(
+                        "authority" to "iso6523-actorid-upis",
+                        "ID" to "0192:889640782"
+                    )
+                )
+            )
+            ok(token.serialize())
+        },
+
         "/fake/custom" to {
             val req = it.asOAuth2HttpRequest()
             val token = mockOAuth2Server.anyToken(
