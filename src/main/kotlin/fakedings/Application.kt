@@ -86,8 +86,9 @@ fun main() {
                 req.url.toIssuerUrl(),
                 mapOf(
                     "sub" to UUID.randomUUID().toString(),
-                    "client_amr" to "client_secret_post",
+                    "amr" to listOf("BankID"),
                     "pid" to pid,
+                    "locale" to "nb",
                     "token_type" to "Bearer",
                     "client_id" to clientId,
                     "aud" to aud,
