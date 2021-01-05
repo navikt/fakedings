@@ -95,11 +95,7 @@ fun main() {
                     "idp" to "https://fakedings.dev-gcp.nais.io/fake/idporten",
                     "scope" to "openid",
                     "client_orgno" to "889640782",
-                    "jti" to "97f580a6-b479-426d-876b-267aa9848e2e",
-                    "consumer" to listOf(
-                        "authority" to "iso6523-actorid-upis",
-                        "ID" to "0192:889640782"
-                    )
+                    "jti" to "97f580a6-b479-426d-876b-267aa9848e2e"
                 )
             )
             ok(token.serialize())
