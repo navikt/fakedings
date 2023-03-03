@@ -3,3 +3,4 @@ namespace: plattformsikkerhet
 team: plattformsikkerhet
 ingresses:
   - https://fakedings.dev-gcp.nais.io
+  - https://fakedings.dev.nav.cloud.nais.io
