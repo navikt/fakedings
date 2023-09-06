@@ -11,14 +11,14 @@ It is a wrapper around the https://github.com/navikt/mock-oauth2-server, providi
 
 #### HTTP GET - Fake IdPorten token 
 
-https://fakedings.dev-gcp.nais.io/fake/idporten
+https://fakedings.intern.dev.nav.no/fake/idporten
 
 ``` http request
 GET /fake/idporten
     ?pid=12345678910
     &acr=Level4
 
-Host: fakedings.dev-gcp.nais.io
+Host: fakedings.intern.dev.nav.no
 ```
 Response body:
 ``` 
@@ -28,14 +28,14 @@ eyJraWQiOiJtb2NrLW9hdXRoM......
 
 #### HTTP GET - Fake Azure AD token
 
-https://fakedings.dev-gcp.nais.io/fake/aad
+https://fakedings.intern.dev.nav.no/fake/aad
 
 ``` http request
 GET /fake/aad
     ?preferred_username=user@email.com
     &name=You Only Live Once
 
-Host: fakedings.dev-gcp.nais.io
+Host: fakedings.intern.dev.nav.no
 ```
 Response body:
 ``` 
@@ -46,14 +46,14 @@ eyJraWQiOiJtb2NrLW9hdXRoM......
 
 #### HTTP GET - Fake client_assertion for use with TokenX
 
-https://fakedings.dev-gcp.nais.io/fake/client_assertion
+https://fakedings.intern.dev.nav.no/fake/client_assertion
 
 ``` http request
 GET /fake/client_assertion
     ?client_id=someclientid
     &aud=https://tokendings.dev-gcp.nais.io/token
 
-Host: fakedings.dev-gcp.nais.io
+Host: fakedings.intern.dev.nav.no
 ```
 Response body:
 ``` 
@@ -63,7 +63,7 @@ eyJraWQiOiJtb2NrLW9hdXRoM......
 
 #### HTTP GET - Fake TokenX token
 
-https://fakedings.dev-gcp.nais.io/fake/tokenx
+https://fakedings.intern.dev.nav.no/fake/tokenx
 
 ``` http request
 GET /fake/tokenx
@@ -72,7 +72,7 @@ GET /fake/tokenx
     &acr=Level4
     &pid=12345678910
 
-Host: fakedings.dev-gcp.nais.io
+Host: fakedings.intern.dev.nav.no
 ```
 Response body:
 ``` 
@@ -82,14 +82,14 @@ eyJraWQiOiJtb2NrLW9hdXRoM......
 
 #### HTTP POST - Fake any token, i.e. you can post any claims you want
 
-https://fakedings.dev-gcp.nais.io/fake/custom
+https://fakedings.intern.dev.nav.no/fake/custom
 
 Any form parameter sent in the application/x-www-form-urlencoded request will be added as a claim in the resulting token.
 
 ``` http request
 POST /fake/custom
 
-Host: fakedings.dev-gcp.nais.io
+Host: fakedings.intern.dev.nav.no
 Content-Type: application/x-www-form-urlencoded
 
 sub=mysub&
@@ -104,5 +104,5 @@ eyJraWQiOiJtb2NrLW9hdXRoM......
 [Sample token](https://jwt.io?token=eyJraWQiOiJtb2NrLW9hdXRoMi1zZXJ2ZXIta2V5IiwidHlwIjoiSldUIiwiYWxnIjoiUlMyNTYifQ.eyJhdWQiOiJteWF1ZGllbmNlIiwic3ViIjoibXlzdWIiLCJuYmYiOjE2MDk4Mzg2NjksIm15Y3VzdG9tIjoiY3VzdG9tMSIsImlzcyI6Imh0dHBzOlwvXC9mYWtlZGluZ3MuZGV2LWdjcC5uYWlzLmlvXC9mYWtlIiwiZXhwIjoxNjEzNDM4NjY5LCJpYXQiOjE2MDk4Mzg2NjksImp0aSI6Ijk1NDVmNzllLTA1OWUtNDRmZi1hMmFhLTAwZDNmM2QyYzAyMSJ9.E5-uXUWs6hqpHWXHcv-hC3ZmRqmcCesCxZ7udK2NLGg7uQS6m6JCp29h9dcyqJ_ZWY1SzOyF_NSZsgfAkuo4aPvVa1wK1-PaR3ys_WjdX9UG2NEdnyO5WzHFuPbM8TLEX78yjPRHcCiJxtc3OzLUqSl01yKJXYgAA8X4zcLqbrFPygfJJ-dC1LgBQrAaImsFoRWW5cgYqwk51DIBXeSQfVjvSu7TWO3t0G8R6dUl23ivzPLb5NWNII9FWHNdXPOrrT6xG-gjTu8MrfofwLml8sJD8r7EmgVrp2fKbCFwpYWA_PaEdYHEhZ_LiNUvdn7ohTTGbkkckhk_uJQJEBmGUA)
 
 ### OpenID Connect discovery
-https://fakedings.dev-gcp.nais.io/default/.well-known/openid-configuration
+https://fakedings.intern.dev.nav.no/default/.well-known/openid-configuration
 

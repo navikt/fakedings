@@ -93,7 +93,7 @@ fun main() {
                     "client_id" to clientId,
                     "aud" to aud,
                     "acr" to acr,
-                    "idp" to "https://fakedings.dev-gcp.nais.io/fake/idporten",
+                    "idp" to "https://fakedings.intern.dev.nav.no/fake/idporten",
                     "scope" to "openid",
                     "client_orgno" to "889640782",
                     "jti" to "97f580a6-b479-426d-876b-267aa9848e2e"
