@@ -50,6 +50,7 @@ fun main() {
             val acr: String = it.param("acr") ?: "idporten-loa-high"
             val locale: String = it.param("locale") ?: "nb"
             val amr: String = it.param("amr") ?: "BankID"
+            val clientId = it.param("client_id") ?: "notfound"
 
             val token = tokenProvider.fakeToken(
                 req.url.fakeIssuerUrl(),
@@ -63,6 +64,7 @@ fun main() {
                     "acr" to acr,
                     "sid" to UUID.randomUUID().toString(),
                     "auth_time" to Date.from(Instant.now()),
+                    "client_id" to clientId
                 ),
             )
             ok(token.serialize())
