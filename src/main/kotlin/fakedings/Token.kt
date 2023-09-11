@@ -11,6 +11,10 @@ import com.nimbusds.jwt.SignedJWT
 import com.nimbusds.oauth2.sdk.AuthorizationGrant
 import com.nimbusds.oauth2.sdk.GrantType
 import com.nimbusds.oauth2.sdk.TokenRequest
+import com.nimbusds.oauth2.sdk.id.ClientID
+import no.nav.security.mock.oauth2.token.DefaultOAuth2TokenCallback
+import no.nav.security.mock.oauth2.token.OAuth2TokenProvider
+import okhttp3.HttpUrl
 import java.net.URI
 import java.security.KeyPairGenerator
 import java.security.interfaces.RSAPrivateKey
@@ -18,24 +22,23 @@ import java.security.interfaces.RSAPublicKey
 import java.time.Duration
 import java.time.Instant
 import java.util.Date
-import no.nav.security.mock.oauth2.MockOAuth2Server
-import no.nav.security.mock.oauth2.token.DefaultOAuth2TokenCallback
-import okhttp3.HttpUrl
 
 class MockGrant : AuthorizationGrant(GrantType("MockGrant")) {
     override fun toParameters(): MutableMap<String, MutableList<String>> = mutableMapOf()
 }
 
-internal fun MockOAuth2Server.anyToken(issuerUrl: HttpUrl, claims: Map<String, Any>, expiry: Duration = Duration.ofHours(1)): SignedJWT {
+internal fun OAuth2TokenProvider.fakeToken(issuerUrl: HttpUrl, claims: Map<String, Any>, expiry: Duration = Duration.ofHours(1)): SignedJWT {
     val jwtClaimsSet = claims.toJwtClaimsSet()
-    return this.config.tokenProvider.exchangeAccessToken(
-        TokenRequest(URI.create("http://mockgrant"), MockGrant()),
+    val clientID: String = (claims["client_id"] ?: claims["azp"] ?: "notfound") as String
+
+    return this.exchangeAccessToken(
+        TokenRequest(URI.create("http://mockgrant"), ClientID(clientID), MockGrant()),
         issuerUrl,
         jwtClaimsSet,
         DefaultOAuth2TokenCallback(
             audience = jwtClaimsSet.audience,
-            expiry = expiry.toMillis()
-        )
+            expiry = expiry.toMillis(),
+        ),
     )
 }
 
@@ -54,7 +57,7 @@ internal fun JWTClaimsSet.toSignedJWT(key: RSAKey): SignedJWT =
         JWSHeader.Builder(JWSAlgorithm.RS256)
             .keyID(key.keyID)
             .type(JOSEObjectType.JWT).build(),
-        this
+        this,
     ).apply {
         this.sign(RSASSASigner(key.toPrivateKey()))
     }

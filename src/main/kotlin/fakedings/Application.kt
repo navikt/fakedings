@@ -1,19 +1,30 @@
 package fakedings
 
+import com.nimbusds.oauth2.sdk.OAuth2Error
+import mu.KotlinLogging
+import no.nav.security.mock.oauth2.MockOAuth2Server
+import no.nav.security.mock.oauth2.OAuth2Config
+import no.nav.security.mock.oauth2.OAuth2Exception
+import no.nav.security.mock.oauth2.extensions.asOAuth2HttpRequest
+import no.nav.security.mock.oauth2.extensions.toIssuerUrl
+import no.nav.security.mock.oauth2.http.OAuth2HttpResponse
+import no.nav.security.mock.oauth2.http.OAuth2HttpServer
+import no.nav.security.mock.oauth2.http.RequestHandler
+import no.nav.security.mock.oauth2.http.Ssl
+import no.nav.security.mock.oauth2.token.OAuth2TokenProvider
+import okhttp3.Headers
+import okhttp3.HttpUrl
+import okhttp3.mockwebserver.Dispatcher
+import okhttp3.mockwebserver.MockResponse
+import okhttp3.mockwebserver.MockWebServer
+import okhttp3.mockwebserver.RecordedRequest
 import java.net.InetAddress
 import java.net.InetSocketAddress
 import java.time.Instant
 import java.util.Date
 import java.util.UUID
-import mu.KotlinLogging
-import no.nav.security.mock.oauth2.MockOAuth2Dispatcher
-import no.nav.security.mock.oauth2.MockOAuth2Server
-import no.nav.security.mock.oauth2.extensions.asOAuth2HttpRequest
-import no.nav.security.mock.oauth2.extensions.toIssuerUrl
-import okhttp3.Headers
-import okhttp3.mockwebserver.Dispatcher
-import okhttp3.mockwebserver.MockResponse
-import okhttp3.mockwebserver.RecordedRequest
+import java.util.concurrent.BlockingQueue
+import java.util.concurrent.LinkedBlockingQueue
 
 private val log = KotlinLogging.logger { }
 
@@ -22,8 +33,7 @@ typealias PathDispather = (RecordedRequest) -> MockResponse
 val rsaKey = createRSAKey("clientAssertionKey")
 
 fun main() {
-    val mockOAuth2Server = MockOAuth2Server()
-
+    val tokenProvider = OAuth2TokenProvider()
     val pathDispatchers: Map<String, PathDispather> = mapOf(
         "/internal/isalive" to {
             ok("alive")
@@ -37,20 +47,23 @@ fun main() {
         "/fake/idporten" to {
             val req = it.asOAuth2HttpRequest()
             val pid: String = it.param("pid") ?: "notfound"
-            val acr: String = it.param("acr") ?: "Level4"
-            val token = mockOAuth2Server.anyToken(
-                req.url.toIssuerUrl(),
+            val acr: String = it.param("acr") ?: "idporten-loa-high"
+            val locale: String = it.param("locale") ?: "nb"
+            val amr: String = it.param("amr") ?: "BankID"
+
+            val token = tokenProvider.fakeToken(
+                req.url.fakeIssuerUrl(),
                 mapOf(
                     "sub" to UUID.randomUUID().toString(),
                     "aud" to "notfound",
                     "at_hash" to UUID.randomUUID().toString(),
-                    "amr" to listOf("BankId"),
+                    "amr" to listOf(amr),
                     "pid" to pid,
-                    "locale" to "nb",
+                    "locale" to locale,
                     "acr" to acr,
                     "sid" to UUID.randomUUID().toString(),
-                    "auth_time" to Date.from(Instant.now())
-                )
+                    "auth_time" to Date.from(Instant.now()),
+                ),
             )
             ok(token.serialize())
         },
@@ -58,20 +71,23 @@ fun main() {
             val req = it.asOAuth2HttpRequest()
             val preferredUsername: String = it.param("preferred_username") ?: "notfound"
             val name: String = it.param("name") ?: "notfound"
-            val token = mockOAuth2Server.anyToken(
-                req.url.toIssuerUrl(),
+            val aud = it.param("aud") ?: "receiver-client-id"
+            val azp = it.param("azp") ?: "consumer-cilent-id"
+
+            val token = tokenProvider.fakeToken(
+                req.url.fakeIssuerUrl(),
                 mapOf(
                     "sub" to UUID.randomUUID().toString(),
-                    "aud" to "notfound",
+                    "aud" to aud,
                     "aio" to UUID.randomUUID().toString(),
                     "azpacr" to "1",
-                    "azp" to "client id på den som spør",
+                    "azp" to azp,
                     "name" to name,
                     "oid" to UUID.randomUUID().toString(),
                     "preferred_username" to preferredUsername,
                     "scp" to "User.Read",
-                    "ver" to "2.0"
-                )
+                    "ver" to "2.0",
+                ),
             )
             ok(token.serialize())
         },
@@ -80,43 +96,42 @@ fun main() {
             val clientId = it.param("client_id") ?: "notfound"
             val pid = it.param("pid") ?: "notfound"
             val aud = it.param("aud") ?: "notfound"
-            val acr = it.param("acr") ?: "notfound"
+            val acr = it.param("acr") ?: "Level4"
+            val locale: String = it.param("locale") ?: "nb"
+            val amr: String = it.param("amr") ?: "BankID"
+            val idp: String = it.param("idp") ?: req.url.fakeIssuerUrl().toString()
 
-            val token = mockOAuth2Server.anyToken(
-                req.url.toIssuerUrl(),
+            val token = tokenProvider.fakeToken(
+                req.url.fakeIssuerUrl(),
                 mapOf(
                     "sub" to UUID.randomUUID().toString(),
-                    "amr" to listOf("BankID"),
+                    "amr" to listOf(amr),
+                    "locale" to locale,
                     "pid" to pid,
-                    "locale" to "nb",
                     "token_type" to "Bearer",
                     "client_id" to clientId,
                     "aud" to aud,
                     "acr" to acr,
-                    "idp" to "https://fakedings.intern.dev.nav.no/fake/idporten",
+                    "idp" to idp,
                     "scope" to "openid",
                     "client_orgno" to "889640782",
-                    "jti" to "97f580a6-b479-426d-876b-267aa9848e2e"
-                )
+                    "jti" to UUID.randomUUID().toString(),
+                ),
             )
             ok(token.serialize())
         },
 
         "/fake/custom" to {
             val req = it.asOAuth2HttpRequest()
-            val token = mockOAuth2Server.anyToken(
-                req.url.toIssuerUrl(),
-                req.formParameters.map
+            val token = tokenProvider.fakeToken(
+                req.url.fakeIssuerUrl(),
+                req.formParameters.map,
             )
             ok(token.serialize())
-        }
+        },
     )
 
-    mockOAuth2Server.dispatcher = DelegatingDispatcher(
-        MockOAuth2Dispatcher(mockOAuth2Server.config),
-        pathDispatchers
-    )
-
+    val mockOAuth2Server = MockOAuth2Server(OAuth2Config(tokenProvider = tokenProvider, httpServer = MockWebServerWrapper(pathDispatchers = pathDispatchers)))
     mockOAuth2Server.start(InetSocketAddress(0).address, port = Config.port)
     Runtime.getRuntime().addShutdownHook(object : Thread() {
         override fun run() {
@@ -125,12 +140,59 @@ fun main() {
     })
 }
 
+class MockWebServerWrapper @JvmOverloads constructor(
+    val ssl: Ssl? = null,
+    val pathDispatchers: Map<String, PathDispather>,
+) : OAuth2HttpServer {
+    private val mockWebServer: MockWebServer = MockWebServer()
+
+    override fun start(inetAddress: InetAddress, port: Int, requestHandler: RequestHandler): OAuth2HttpServer = apply {
+        mockWebServer.start(inetAddress, port)
+        mockWebServer.dispatcher = DelegatingDispatcher(
+            MockWebServerDispatcher(requestHandler),
+            pathDispatchers,
+        )
+        if (ssl != null) {
+            mockWebServer.useHttps(ssl.sslContext().socketFactory, false)
+        }
+        log.debug { "started server on address=$inetAddress and port=${mockWebServer.port}, httpsEnabled=${ssl != null}" }
+    }
+
+    override fun stop(): OAuth2HttpServer = apply {
+        mockWebServer.shutdown()
+    }
+
+    override fun port(): Int = mockWebServer.port
+
+    override fun url(path: String): HttpUrl = mockWebServer.url(path)
+    override fun sslConfig(): Ssl? = ssl
+
+    internal class MockWebServerDispatcher(
+        private val requestHandler: RequestHandler,
+        private val responseQueue: BlockingQueue<MockResponse> = LinkedBlockingQueue(),
+    ) : Dispatcher() {
+
+        override fun dispatch(request: RecordedRequest): MockResponse =
+            responseQueue.peek()?.let {
+                responseQueue.take()
+            } ?: requestHandler.invoke(request.asOAuth2HttpRequest()).toMockResponse()
+
+        private fun OAuth2HttpResponse.toMockResponse(): MockResponse =
+            MockResponse()
+                .setHeaders(this.headers)
+                .setResponseCode(this.status)
+                .let {
+                    if (this.body != null) it.setBody(this.body!!) else it.setBody("")
+                }
+    }
+}
+
 class DelegatingDispatcher(
     val defaultDispatcher: Dispatcher,
-    val pathDispatchers: Map<String, PathDispather> = emptyMap()
+    val pathDispatchers: Map<String, PathDispather> = emptyMap(),
 ) : Dispatcher() {
     override fun dispatch(request: RecordedRequest): MockResponse {
-        log.debug("path: ${request.toPath()}")
+        log.debug { "path: ${request.toPath()}" }
         return pathDispatchers[request.toPath()]
             ?.invoke(request)
             ?: defaultDispatcher.dispatch(request)
@@ -162,6 +224,8 @@ internal fun String.toPathSegments(): List<String> =
         .removeSuffix("/")
         .split("/")
         .toList()
+
+internal fun HttpUrl.fakeIssuerUrl() = this.toIssuerUrl().resolve("/fake") ?: throw OAuth2Exception(OAuth2Error.INVALID_REQUEST, "cannot resolve path '/fake'")
 
 internal fun String.fromEnv(): String? = System.getenv(this)
 internal fun String.fromEnvOrFail(): String = fromEnv() ?: throw RuntimeException("could not find environment var $this")
