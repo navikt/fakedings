@@ -8,9 +8,6 @@ on:
       - "doc/**"
       - "**/*.md"
 
-env:
-  IMAGE: docker.pkg.github.com/${{ github.repository }}/fakedings:${{ github.sha }}
-
 jobs:
   build:
     name: Build and push Docker container
