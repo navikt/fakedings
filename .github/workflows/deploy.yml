@@ -15,6 +15,11 @@ jobs:
   build:
     name: Build and push Docker container
     runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      id-token: write
+    outputs:
+      image: ${{ steps.docker-build-push.outputs.image }}
     steps:
       - name: Checkout latest code
         uses: actions/checkout@v4
@@ -42,13 +47,13 @@ jobs:
       - name: Build with Gradle
         run: ./gradlew build
 
-      - name: Build and publish Docker image
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-        run: |
-          docker build --tag ${IMAGE} .
-          echo "$GITHUB_TOKEN" | docker login --username "$GITHUB_REPOSITORY" --password-stdin https://docker.pkg.github.com
-          docker push ${IMAGE}
+      - name: Push docker image to GAR
+        uses: nais/docker-build-push@v0
+        id: docker-build-push
+        with:
+          team: plattformsikkerhet
+          identity_provider: ${{ secrets.NAIS_WORKLOAD_IDENTITY_PROVIDER }}
+          project_id: ${{ vars.NAIS_MANAGEMENT_PROJECT_ID }}
 
   deploy-dev-gcp:
     name: Deploy to dev-gcp
@@ -62,3 +67,4 @@ jobs:
           CLUSTER: dev-gcp
           RESOURCE: .nais/nais.yml
           VARS: .nais/dev-gcp-vars.yml
+          VAR: image=${{ needs.build.outputs.image }}
