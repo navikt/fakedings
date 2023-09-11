@@ -64,7 +64,7 @@ fun main() {
                     "acr" to acr,
                     "sid" to UUID.randomUUID().toString(),
                     "auth_time" to Date.from(Instant.now()),
-                    "client_id" to clientId
+                    "client_id" to clientId,
                 ),
             )
             ok(token.serialize())
