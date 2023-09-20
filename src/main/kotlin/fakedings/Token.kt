@@ -37,7 +37,7 @@ internal fun OAuth2TokenProvider.fakeToken(issuerUrl: HttpUrl, claims: Map<Strin
         jwtClaimsSet,
         DefaultOAuth2TokenCallback(
             audience = jwtClaimsSet.audience,
-            expiry = expiry.toMillis(),
+            expiry = expiry.toSeconds(),
         ),
     )
 }
