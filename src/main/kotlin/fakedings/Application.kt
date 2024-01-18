@@ -75,6 +75,8 @@ fun main() {
             val name: String = it.param("name") ?: "notfound"
             val aud = it.param("aud") ?: "receiver-client-id"
             val azp = it.param("azp") ?: "consumer-cilent-id"
+            val navIdent: String? = it.param("NAVident")
+            val groups: List<String>? = it.param("groups")?.split(",")
 
             val token = tokenProvider.fakeToken(
                 req.url.fakeIssuerUrl(),
@@ -89,7 +91,10 @@ fun main() {
                     "preferred_username" to preferredUsername,
                     "scp" to "User.Read",
                     "ver" to "2.0",
-                ),
+                ) + mapOfNotNullValues(
+                    "NAVident" to navIdent,
+                    "groups" to groups
+                )
             )
             ok(token.serialize())
         },
@@ -141,6 +146,9 @@ fun main() {
         }
     })
 }
+
+internal fun <Key, Value>mapOfNotNullValues(vararg entires: Pair<Key, Value?>): Map<Key, Value> =
+    entires.mapNotNull { (key, value) -> if (value == null) null else key to value }.toMap()
 
 class MockWebServerWrapper @JvmOverloads constructor(
     val ssl: Ssl? = null,
