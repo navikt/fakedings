@@ -1,16 +1,15 @@
-val gradleVersion = "6.7"
 val kotlinLoggingVersion = "3.0.5"
-val logbackVersion = "1.4.11"
-val mockOauth2ServerVersion = "1.0.0"
-val kotlinVersion = "1.9.10"
+val logbackVersion = "1.4.14"
+val mockOauth2ServerVersion = "2.1.1"
+val kotlinVersion = "1.9.22"
 val mainClassKt = "fakedings.ApplicationKt"
 
 plugins {
     application
-    kotlin("jvm") version "1.9.10"
-    id("org.jmailen.kotlinter") version "3.16.0"
+    kotlin("jvm") version "1.9.22"
+    id("org.jmailen.kotlinter") version "4.2.0"
     id("com.github.johnrengelman.shadow") version "8.1.1"
-    id("com.github.ben-manes.versions") version "0.47.0"
+    id("com.github.ben-manes.versions") version "0.50.0"
     id("se.patrikerdes.use-latest-versions") version "0.2.18"
 }
 
@@ -19,8 +18,8 @@ application {
 }
 
 java {
-    sourceCompatibility = JavaVersion.VERSION_17
-    targetCompatibility = JavaVersion.VERSION_17
+    sourceCompatibility = JavaVersion.VERSION_21
+    targetCompatibility = JavaVersion.VERSION_21
 }
 
 apply(plugin = "org.jmailen.kotlinter")
@@ -59,11 +58,11 @@ tasks {
 
     withType<org.jetbrains.kotlin.gradle.tasks.KotlinCompile> {
         kotlinOptions {
-            jvmTarget = "17"
+            jvmTarget = "21"
         }
     }
 
     withType<Wrapper> {
-        gradleVersion = "8.3"
+        gradleVersion = "8.5"
     }
 }

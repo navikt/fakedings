@@ -147,8 +147,8 @@ fun main() {
     })
 }
 
-internal fun <Key, Value>mapOfNotNullValues(vararg entires: Pair<Key, Value?>): Map<Key, Value> =
-    entires.mapNotNull { (key, value) -> if (value == null) null else key to value }.toMap()
+internal fun <Key, Value>mapOfNotNullValues(vararg entries: Pair<Key, Value?>): Map<Key, Value> =
+    entries.mapNotNull { (key, value) -> if (value == null) null else key to value }.toMap()
 
 class MockWebServerWrapper @JvmOverloads constructor(
     val ssl: Ssl? = null,
