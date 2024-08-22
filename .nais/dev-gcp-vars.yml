@@ -1,5 +1,0 @@
-app: fakedings
-namespace: plattformsikkerhet
-team: plattformsikkerhet
-ingresses:
-  - https://fakedings.intern.dev.nav.no

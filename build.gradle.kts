@@ -1,15 +1,15 @@
 val kotlinLoggingVersion = "3.0.5"
-val logbackVersion = "1.4.14"
-val mockOauth2ServerVersion = "2.1.1"
-val kotlinVersion = "1.9.22"
+val logbackVersion = "1.5.7"
+val mockOauth2ServerVersion = "2.1.9"
+val kotlinVersion = "2.0.10"
 val mainClassKt = "fakedings.ApplicationKt"
 
 plugins {
     application
-    kotlin("jvm") version "1.9.22"
-    id("org.jmailen.kotlinter") version "4.2.0"
+    kotlin("jvm") version "2.0.10"
+    id("org.jmailen.kotlinter") version "4.4.1"
     id("com.github.johnrengelman.shadow") version "8.1.1"
-    id("com.github.ben-manes.versions") version "0.50.0"
+    id("com.github.ben-manes.versions") version "0.51.0"
     id("se.patrikerdes.use-latest-versions") version "0.2.18"
 }
 
@@ -60,9 +60,5 @@ tasks {
         kotlinOptions {
             jvmTarget = "21"
         }
-    }
-
-    withType<Wrapper> {
-        gradleVersion = "8.5"
     }
 }

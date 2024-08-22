@@ -1,17 +1,16 @@
 apiVersion: nais.io/v1alpha1
 kind: Application
 metadata:
-  name: {{app}}
-  namespace: {{namespace}}
+  name: fakedings
+  namespace: token
   labels:
-    team: {{team}}
+    team: token
 spec:
   image: {{ image }}
   port: 8080
   replicas:
     min: 1
     max: 1
-    cpuThresholdPercentage: 50
   liveness:
     path: /internal/isalive
     initialDelay: 5
@@ -24,12 +23,9 @@ spec:
     failureThreshold: 30
   resources:
     limits:
-      cpu: 500m
       memory: 512Mi
     requests:
-      cpu: 200m
+      cpu: 50m
       memory: 256Mi
   ingresses:
-  {{#each ingresses as |url|}}
-    - {{url}}
-  {{/each}}
+    - https://fakedings.intern.dev.nav.no
