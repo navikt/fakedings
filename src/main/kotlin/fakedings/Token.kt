@@ -27,7 +27,11 @@ class MockGrant : AuthorizationGrant(GrantType("MockGrant")) {
     override fun toParameters(): MutableMap<String, MutableList<String>> = mutableMapOf()
 }
 
-internal fun OAuth2TokenProvider.fakeToken(issuerUrl: HttpUrl, claims: Map<String, Any>, expiry: Duration = Duration.ofHours(1)): SignedJWT {
+internal fun OAuth2TokenProvider.fakeToken(
+    issuerUrl: HttpUrl,
+    claims: Map<String, Any>,
+    expiry: Duration = Duration.ofHours(1),
+): SignedJWT {
     val jwtClaimsSet = claims.toJwtClaimsSet()
     val clientID: String = (claims["client_id"] ?: claims["azp"] ?: "notfound") as String
 
@@ -42,40 +46,51 @@ internal fun OAuth2TokenProvider.fakeToken(issuerUrl: HttpUrl, claims: Map<Strin
     )
 }
 
-internal fun clientAssertion(clientId: String, audience: String, rsaKey: RSAKey) =
-    JWTClaimsSet.Builder()
-        .subject(clientId)
-        .issuer(clientId)
-        .audience(audience)
-        .notBeforeTime(Date.from(Instant.now()))
-        .issueTime(Date.from(Instant.now()))
-        .expirationTime(Date.from(Instant.now().plusSeconds(100)))
-        .build().toSignedJWT(rsaKey)
+internal fun clientAssertion(
+    clientId: String,
+    audience: String,
+    rsaKey: RSAKey,
+) = JWTClaimsSet
+    .Builder()
+    .subject(clientId)
+    .issuer(clientId)
+    .audience(audience)
+    .notBeforeTime(Date.from(Instant.now()))
+    .issueTime(Date.from(Instant.now()))
+    .expirationTime(Date.from(Instant.now().plusSeconds(100)))
+    .build()
+    .toSignedJWT(rsaKey)
 
 internal fun JWTClaimsSet.toSignedJWT(key: RSAKey): SignedJWT =
     SignedJWT(
-        JWSHeader.Builder(JWSAlgorithm.RS256)
+        JWSHeader
+            .Builder(JWSAlgorithm.RS256)
             .keyID(key.keyID)
-            .type(JOSEObjectType.JWT).build(),
+            .type(JOSEObjectType.JWT)
+            .build(),
         this,
     ).apply {
         this.sign(RSASSASigner(key.toPrivateKey()))
     }
 
 internal fun createRSAKey(keyID: String) =
-    KeyPairGenerator.getInstance("RSA").let {
-        it.initialize(2048)
-        it.generateKeyPair()
-    }.let {
-        RSAKey.Builder(it.public as RSAPublicKey)
-            .privateKey(it.private as RSAPrivateKey)
-            .keyUse(KeyUse.SIGNATURE)
-            .keyID(keyID)
-            .build()
-    }
+    KeyPairGenerator
+        .getInstance("RSA")
+        .let {
+            it.initialize(2048)
+            it.generateKeyPair()
+        }.let {
+            RSAKey
+                .Builder(it.public as RSAPublicKey)
+                .privateKey(it.private as RSAPrivateKey)
+                .keyUse(KeyUse.SIGNATURE)
+                .keyID(keyID)
+                .build()
+        }
 
 internal fun Map<String, Any>.toJwtClaimsSet(): JWTClaimsSet =
-    JWTClaimsSet.Builder()
+    JWTClaimsSet
+        .Builder()
         .apply {
             this@toJwtClaimsSet.forEach {
                 this.claim(it.key, it.value)
