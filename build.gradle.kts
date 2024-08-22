@@ -1,7 +1,6 @@
 val kotlinLoggingVersion = "3.0.5"
 val logbackVersion = "1.5.7"
 val mockOauth2ServerVersion = "2.1.9"
-val kotlinVersion = "2.0.10"
 val mainClassKt = "fakedings.ApplicationKt"
 
 plugins {
