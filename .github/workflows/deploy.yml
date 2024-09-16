@@ -27,9 +27,9 @@ jobs:
           distribution: 'temurin'
           cache: 'gradle'
       - name: Setup Gradle
-        uses: gradle/actions/setup-gradle@16bf8bc8fe830fa669c3c9f914d3eb147c629707 # ratchet:gradle/actions/setup-gradle@v4
+        uses: gradle/actions/setup-gradle@d156388eb19639ec20ade50009f3d199ce1e2808 # ratchet:gradle/actions/setup-gradle@v4
       - name: Generate and submit dependency graph
-        uses: gradle/actions/dependency-submission@16bf8bc8fe830fa669c3c9f914d3eb147c629707 # ratchet:gradle/actions/dependency-submission@v4
+        uses: gradle/actions/dependency-submission@d156388eb19639ec20ade50009f3d199ce1e2808 # ratchet:gradle/actions/dependency-submission@v4
       - name: Build with Gradle
         run: ./gradlew clean build
       - name: Push docker image to GAR
