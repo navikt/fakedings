@@ -1,7 +1,7 @@
 import org.jetbrains.kotlin.gradle.dsl.JvmTarget
 
 val kotlinLoggingVersion = "3.0.5"
-val logbackVersion = "1.5.11"
+val logbackVersion = "1.5.12"
 val mockOauth2ServerVersion = "2.1.9"
 val mainClassKt = "fakedings.ApplicationKt"
 
