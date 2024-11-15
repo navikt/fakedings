@@ -1,5 +1,4 @@
 name: Build, push, and deploy to GCP
-
 on:
   push:
     branches:
@@ -7,7 +6,6 @@ on:
     paths-ignore:
       - "doc/**"
       - "**/*.md"
-
 jobs:
   build:
     name: Build and push Docker container
@@ -27,19 +25,18 @@ jobs:
           distribution: 'temurin'
           cache: 'gradle'
       - name: Setup Gradle
-        uses: gradle/actions/setup-gradle@d156388eb19639ec20ade50009f3d199ce1e2808 # ratchet:gradle/actions/setup-gradle@v4
+        uses: gradle/actions/setup-gradle@473878a77f1b98e2b5ac4af93489d1656a80a5ed # ratchet:gradle/actions/setup-gradle@v4
       - name: Generate and submit dependency graph
-        uses: gradle/actions/dependency-submission@d156388eb19639ec20ade50009f3d199ce1e2808 # ratchet:gradle/actions/dependency-submission@v4
+        uses: gradle/actions/dependency-submission@473878a77f1b98e2b5ac4af93489d1656a80a5ed # ratchet:gradle/actions/dependency-submission@v4
       - name: Build with Gradle
         run: ./gradlew clean build
       - name: Push docker image to GAR
-        uses: nais/docker-build-push@v0
+        uses: nais/docker-build-push@e69b82501b1f6e02ed65607ee4cd714ca43dc010 # ratchet:nais/docker-build-push@v0
         id: docker-build-push
         with:
           team: token
           identity_provider: ${{ secrets.NAIS_WORKLOAD_IDENTITY_PROVIDER }}
           project_id: ${{ vars.NAIS_MANAGEMENT_PROJECT_ID }}
-
   deploy-dev-gcp:
     name: Deploy to dev-gcp
     needs: build
@@ -49,7 +46,7 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683 # ratchet:actions/checkout@v4
-      - uses: nais/deploy/actions/deploy@v2
+      - uses: nais/deploy/actions/deploy@v2 # ratchet:exclude
         env:
           CLUSTER: dev-gcp
           RESOURCE: .nais/nais.yml
