@@ -31,7 +31,7 @@ jobs:
       - name: Build with Gradle
         run: ./gradlew clean build
       - name: Push docker image to GAR
-        uses: nais/docker-build-push@b456950f126babd98088910e4dc8ac9373823bda # ratchet:nais/docker-build-push@v0
+        uses: nais/docker-build-push@70c5289cc8ad6762198876d08f4e0d5426575c13 # ratchet:nais/docker-build-push@v0
         id: docker-build-push
         with:
           team: token
