@@ -1,8 +1,5 @@
 import org.jetbrains.kotlin.gradle.dsl.JvmTarget
 
-val kotlinLoggingVersion = "3.0.5"
-val logbackVersion = "1.5.18"
-val mockOauth2ServerVersion = "2.1.11"
 val mainClassKt = "fakedings.ApplicationKt"
 
 plugins {
@@ -32,12 +29,12 @@ repositories {
 dependencies {
     implementation(kotlin("stdlib"))
     implementation(kotlin("reflect"))
-    implementation("no.nav.security:mock-oauth2-server:$mockOauth2ServerVersion"){
+    implementation("no.nav.security:mock-oauth2-server:2.1.11") {
         exclude(group = "ch.qos.logback", module = "logback-classic")
         exclude(group = "io.github.microutils", module = "kotlin-logging")
     }
-    implementation("ch.qos.logback:logback-classic:$logbackVersion")
-    implementation("io.github.microutils:kotlin-logging-jvm:$kotlinLoggingVersion")
+    implementation("ch.qos.logback:logback-classic:1.5.18")
+    implementation("io.github.microutils:kotlin-logging-jvm:3.0.5")
 }
 
 tasks {
@@ -61,5 +58,12 @@ tasks {
         compilerOptions {
             jvmTarget.set(JvmTarget.JVM_21)
         }
+    }
+
+    named("dependencyUpdates", com.github.benmanes.gradle.versions.updates.DependencyUpdatesTask::class).configure {
+        val immaturityLevels = listOf("rc", "cr", "m", "beta", "alpha", "preview") // order is important
+        val immaturityRegexes = immaturityLevels.map { ".*[.\\-]$it[.\\-\\d]*".toRegex(RegexOption.IGNORE_CASE) }
+        fun immaturityLevel(version: String): Int = immaturityRegexes.indexOfLast { version.matches(it) }
+        rejectVersionIf { immaturityLevel(candidate.version) > immaturityLevel(currentVersion) }
     }
 }
