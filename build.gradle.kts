@@ -35,6 +35,8 @@ dependencies {
     }
     implementation("ch.qos.logback:logback-classic:1.5.18")
     implementation("io.github.microutils:kotlin-logging-jvm:3.0.5")
+
+    testImplementation("org.jetbrains.kotlin:kotlin-test-junit5:2.1.21")
 }
 
 tasks {
@@ -58,6 +60,10 @@ tasks {
         compilerOptions {
             jvmTarget.set(JvmTarget.JVM_21)
         }
+    }
+
+    test {
+        useJUnitPlatform()
     }
 
     named("dependencyUpdates", com.github.benmanes.gradle.versions.updates.DependencyUpdatesTask::class).configure {
