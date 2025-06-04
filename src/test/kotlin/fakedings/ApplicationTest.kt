@@ -99,16 +99,13 @@ class ApplicationTest {
             val claims = parsedJwt.jwtClaimsSet
 
             assertContentEquals(expected = listOf("notfound"), actual = claims.audience)
-            assertContentEquals(expected = listOf("BankID"), actual = claims.getStringListClaim("amr"))
             assertEquals(expected = "notfound", actual = claims.getStringClaim("pid"))
             assertEquals(expected = "idporten-loa-high", actual = claims.getStringClaim("acr"))
             assertEquals(expected = "notfound", actual = claims.getStringClaim("client_id"))
-            assertEquals(expected = "nb", actual = claims.getStringClaim("locale"))
-            // UUID and time-based values are random, so we don't assert them
+            assertEquals(expected = "0192:889640782", actual = claims.getJSONObjectClaim("consumer").getOrDefault("ID", ""))
+            // UUID-based values are random, so we just check they exist
             assertTrue(actual = claims.claims.containsKey("sub"))
-            assertTrue(actual = claims.claims.containsKey("at_hash"))
-            assertTrue(actual = claims.claims.containsKey("sid"))
-            assertTrue(actual = claims.claims.containsKey("auth_time"))
+            assertTrue(actual = claims.claims.containsKey("jti"))
         }
     }
 
@@ -162,14 +159,11 @@ class ApplicationTest {
             val claims = parsedJwt.jwtClaimsSet
 
             assertContentEquals(expected = listOf("notfound"), actual = claims.audience)
-            assertContentEquals(expected = listOf("BankID"), actual = claims.getStringListClaim("amr"))
             assertEquals(expected = "notfound", actual = claims.getStringClaim("pid"))
             assertEquals(expected = "notfound", actual = claims.getStringClaim("client_id"))
             assertEquals(expected = "Level4", actual = claims.getStringClaim("acr"))
-            assertEquals(expected = "nb", actual = claims.getStringClaim("locale"))
-            assertEquals(expected = "Bearer", actual = claims.getStringClaim("token_type"))
             assertEquals(expected = "openid", actual = claims.getStringClaim("scope"))
-            assertEquals(expected = "889640782", actual = claims.getStringClaim("client_orgno"))
+            assertEquals(expected = "0192:889640782", actual = claims.getJSONObjectClaim("consumer").getOrDefault("ID", ""))
             assertTrue(actual = claims.getStringClaim("idp").startsWith("http://localhost"))
             // UUID-based values are random, so we just check they exist
             assertTrue(actual = claims.claims.containsKey("sub"))
@@ -259,11 +253,9 @@ class ApplicationTest {
             val parsedJwt = JWTParser.parse(jwt)
             val claims = parsedJwt.jwtClaimsSet
 
-            assertContentEquals(expected = listOf("Commfides"), actual = claims.getStringListClaim("amr"))
             assertEquals(expected = "12345678901", actual = claims.getStringClaim("pid"))
             assertEquals(expected = "idporten-loa-substantial", actual = claims.getStringClaim("acr"))
             assertEquals(expected = "custom-client-id", actual = claims.getStringClaim("client_id"))
-            assertEquals(expected = "en", actual = claims.getStringClaim("locale"))
         }
     }
 
@@ -311,11 +303,9 @@ class ApplicationTest {
             val claims = parsedJwt.jwtClaimsSet
 
             assertContentEquals(expected = listOf("custom-audience"), actual = claims.audience)
-            assertContentEquals(expected = listOf("BankIDMobil"), actual = claims.getStringListClaim("amr"))
             assertEquals(expected = "12345678901", actual = claims.getStringClaim("pid"))
             assertEquals(expected = "custom-client-id", actual = claims.getStringClaim("client_id"))
             assertEquals(expected = "Level3", actual = claims.getStringClaim("acr"))
-            assertEquals(expected = "en", actual = claims.getStringClaim("locale"))
             assertEquals(expected = "https://custom-idp.example.com", actual = claims.getStringClaim("idp"))
         }
     }

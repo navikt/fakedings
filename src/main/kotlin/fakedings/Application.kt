@@ -20,8 +20,6 @@ import okhttp3.mockwebserver.MockWebServer
 import okhttp3.mockwebserver.RecordedRequest
 import java.net.InetAddress
 import java.net.InetSocketAddress
-import java.time.Instant
-import java.util.Date
 import java.util.UUID
 import java.util.concurrent.BlockingQueue
 import java.util.concurrent.LinkedBlockingQueue
@@ -49,8 +47,6 @@ fun main() {
                 val req = it.asOAuth2HttpRequest()
                 val pid: String = it.param("pid") ?: "notfound"
                 val acr: String = it.param("acr") ?: "idporten-loa-high"
-                val locale: String = it.param("locale") ?: "nb"
-                val amr: String = it.param("amr") ?: "BankID"
                 val clientId = it.param("client_id") ?: "notfound"
 
                 val token =
@@ -59,14 +55,15 @@ fun main() {
                         mapOf(
                             "sub" to UUID.randomUUID().toString(),
                             "aud" to "notfound",
-                            "at_hash" to UUID.randomUUID().toString(),
-                            "amr" to listOf(amr),
                             "pid" to pid,
-                            "locale" to locale,
                             "acr" to acr,
-                            "sid" to UUID.randomUUID().toString(),
-                            "auth_time" to Date.from(Instant.now()),
+                            "scope" to "openid",
                             "client_id" to clientId,
+                            "client_amr" to "private_key_jwt",
+                            "consumer" to mapOf(
+                                "authority" to "iso6523-actorid-upis",
+                                "ID" to "0192:889640782",
+                            ),
                         ),
                     )
                 ok(token.serialize())
@@ -108,8 +105,6 @@ fun main() {
                 val pid = it.param("pid") ?: "notfound"
                 val aud = it.param("aud") ?: "notfound"
                 val acr = it.param("acr") ?: "Level4"
-                val locale: String = it.param("locale") ?: "nb"
-                val amr: String = it.param("amr") ?: "BankID"
                 val idp: String = it.param("idp") ?: req.url.fakeIssuerUrl().toString()
 
                 val token =
@@ -117,16 +112,17 @@ fun main() {
                         req.url.fakeIssuerUrl(),
                         mapOf(
                             "sub" to UUID.randomUUID().toString(),
-                            "amr" to listOf(amr),
-                            "locale" to locale,
+                            "client_amr" to "private_key_jwt",
                             "pid" to pid,
-                            "token_type" to "Bearer",
                             "client_id" to clientId,
                             "aud" to aud,
                             "acr" to acr,
                             "idp" to idp,
                             "scope" to "openid",
-                            "client_orgno" to "889640782",
+                            "consumer" to mapOf(
+                                "authority" to "iso6523-actorid-upis",
+                                "ID" to "0192:889640782",
+                            ),
                             "jti" to UUID.randomUUID().toString(),
                         ),
                     )
