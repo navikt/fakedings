@@ -36,7 +36,12 @@ internal fun OAuth2TokenProvider.fakeToken(
     val clientID: String = (claims["client_id"] ?: claims["azp"] ?: "notfound") as String
 
     return this.exchangeAccessToken(
-        TokenRequest(URI.create("http://mockgrant"), ClientID(clientID), MockGrant()),
+        TokenRequest
+            .Builder(
+                URI.create("http://mockgrant"),
+                ClientID(clientID),
+                MockGrant(),
+            ).build(),
         issuerUrl,
         jwtClaimsSet,
         DefaultOAuth2TokenCallback(
