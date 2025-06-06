@@ -60,10 +60,11 @@ fun main() {
                             "scope" to "openid",
                             "client_id" to clientId,
                             "client_amr" to "private_key_jwt",
-                            "consumer" to mapOf(
-                                "authority" to "iso6523-actorid-upis",
-                                "ID" to "0192:889640782",
-                            ),
+                            "consumer" to
+                                mapOf(
+                                    "authority" to "iso6523-actorid-upis",
+                                    "ID" to "0192:889640782",
+                                ),
                         ),
                     )
                 ok(token.serialize())
@@ -119,10 +120,11 @@ fun main() {
                             "acr" to acr,
                             "idp" to idp,
                             "scope" to "openid",
-                            "consumer" to mapOf(
-                                "authority" to "iso6523-actorid-upis",
-                                "ID" to "0192:889640782",
-                            ),
+                            "consumer" to
+                                mapOf(
+                                    "authority" to "iso6523-actorid-upis",
+                                    "ID" to "0192:889640782",
+                                ),
                             "jti" to UUID.randomUUID().toString(),
                         ),
                     )
