@@ -1,4 +1,5 @@
 import org.jetbrains.kotlin.gradle.dsl.JvmTarget
+import org.jmailen.gradle.kotlinter.tasks.LintTask
 
 val mainClassKt = "fakedings.ApplicationKt"
 
@@ -6,7 +7,7 @@ plugins {
     application
     kotlin("jvm") version "2.2.10"
     id("org.jmailen.kotlinter") version "5.2.0"
-    id("com.github.johnrengelman.shadow") version "8.1.1"
+    id("com.gradleup.shadow") version "9.0.2"
     id("com.github.ben-manes.versions") version "0.52.0"
     id("se.patrikerdes.use-latest-versions") version "0.2.19"
 }
@@ -40,11 +41,18 @@ dependencies {
 }
 
 tasks {
-    withType<org.jmailen.gradle.kotlinter.tasks.LintTask> {
+    kotlin {
+        jvmToolchain(21)
+        compilerOptions {
+            jvmTarget.set(JvmTarget.JVM_21)
+        }
+    }
+
+    withType<LintTask> {
         dependsOn("formatKotlin")
     }
 
-    withType<com.github.jengelman.gradle.plugins.shadow.tasks.ShadowJar> {
+    shadowJar {
         archiveBaseName.set("app")
         archiveClassifier.set("")
         manifest {
@@ -53,12 +61,6 @@ tasks {
                     "Main-Class" to mainClassKt
                 )
             )
-        }
-    }
-
-    withType<org.jetbrains.kotlin.gradle.tasks.KotlinJvmCompile>().configureEach {
-        compilerOptions {
-            jvmTarget.set(JvmTarget.JVM_21)
         }
     }
 
