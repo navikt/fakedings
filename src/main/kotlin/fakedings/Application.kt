@@ -18,6 +18,7 @@ import okhttp3.mockwebserver.Dispatcher
 import okhttp3.mockwebserver.MockResponse
 import okhttp3.mockwebserver.MockWebServer
 import okhttp3.mockwebserver.RecordedRequest
+import org.slf4j.MDC
 import java.net.InetAddress
 import java.net.InetSocketAddress
 import java.util.UUID
@@ -178,7 +179,7 @@ class MockWebServerWrapper
                 if (ssl != null) {
                     mockWebServer.useHttps(ssl.sslContext().socketFactory, false)
                 }
-                log.debug { "started server on address=$inetAddress and port=${mockWebServer.port}, httpsEnabled=${ssl != null}" }
+                log.info { "started server on address=$inetAddress and port=${mockWebServer.port}, httpsEnabled=${ssl != null}" }
             }
 
         override fun stop(): OAuth2HttpServer =
@@ -216,7 +217,12 @@ class DelegatingDispatcher(
     val pathDispatchers: Map<String, PathDispather> = emptyMap(),
 ) : Dispatcher() {
     override fun dispatch(request: RecordedRequest): MockResponse {
+        MDC.put("method", request.method)
+        MDC.put("path", request.toPath())
+        MDC.put("correlation_id", UUID.randomUUID().toString())
+
         log.debug { "path: ${request.toPath()}" }
+
         return pathDispatchers[request.toPath()]
             ?.invoke(request)
             ?: defaultDispatcher.dispatch(request)

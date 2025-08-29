@@ -12,6 +12,7 @@ import com.nimbusds.oauth2.sdk.AuthorizationGrant
 import com.nimbusds.oauth2.sdk.GrantType
 import com.nimbusds.oauth2.sdk.TokenRequest
 import com.nimbusds.oauth2.sdk.id.ClientID
+import mu.KotlinLogging
 import no.nav.security.mock.oauth2.token.DefaultOAuth2TokenCallback
 import no.nav.security.mock.oauth2.token.OAuth2TokenProvider
 import okhttp3.HttpUrl
@@ -22,6 +23,8 @@ import java.security.interfaces.RSAPublicKey
 import java.time.Duration
 import java.time.Instant
 import java.util.Date
+
+private val log = KotlinLogging.logger { }
 
 class MockGrant : AuthorizationGrant(GrantType("MockGrant")) {
     override fun toParameters(): MutableMap<String, MutableList<String>> = mutableMapOf()
@@ -34,6 +37,7 @@ internal fun OAuth2TokenProvider.fakeToken(
 ): SignedJWT {
     val jwtClaimsSet = claims.toJwtClaimsSet()
     val clientID: String = (claims["client_id"] ?: claims["azp"] ?: "notfound") as String
+    log.info { "creating fake token for clientID: \"$clientID\" with claims: $claims" }
 
     return this.exchangeAccessToken(
         TokenRequest
