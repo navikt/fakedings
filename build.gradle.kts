@@ -7,7 +7,6 @@ plugins {
     application
     kotlin("jvm") version "2.2.10"
     id("org.jmailen.kotlinter") version "5.2.0"
-    id("com.gradleup.shadow") version "9.0.2"
     id("com.github.ben-manes.versions") version "0.52.0"
     id("se.patrikerdes.use-latest-versions") version "0.2.19"
 }
@@ -50,18 +49,6 @@ tasks {
 
     withType<LintTask> {
         dependsOn("formatKotlin")
-    }
-
-    shadowJar {
-        archiveBaseName.set("app")
-        archiveClassifier.set("")
-        manifest {
-            attributes(
-                mapOf(
-                    "Main-Class" to mainClassKt
-                )
-            )
-        }
     }
 
     test {
