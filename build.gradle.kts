@@ -29,7 +29,7 @@ repositories {
 dependencies {
     implementation(kotlin("stdlib"))
     implementation(kotlin("reflect"))
-    implementation("no.nav.security:mock-oauth2-server:3.0.0") {
+    implementation("no.nav.security:mock-oauth2-server:3.0.1") {
         exclude(group = "ch.qos.logback", module = "logback-classic")
         exclude(group = "io.github.microutils", module = "kotlin-logging")
     }
