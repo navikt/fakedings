@@ -2,9 +2,7 @@ apiVersion: nais.io/v1alpha1
 kind: Application
 metadata:
   name: fakedings
-  namespace: token
-  labels:
-    team: token
+  namespace: nais
 spec:
   image: {{ image }}
   port: 8080
