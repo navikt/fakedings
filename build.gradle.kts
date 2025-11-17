@@ -6,7 +6,7 @@ val mainClassKt = "fakedings.ApplicationKt"
 plugins {
     application
     kotlin("jvm") version "2.2.21"
-    id("org.jmailen.kotlinter") version "5.2.0"
+    id("org.jmailen.kotlinter") version "5.3.0"
     id("com.github.ben-manes.versions") version "0.53.0"
     id("se.patrikerdes.use-latest-versions") version "0.2.19"
 }
