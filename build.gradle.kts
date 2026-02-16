@@ -5,7 +5,7 @@ val mainClassKt = "fakedings.ApplicationKt"
 
 plugins {
     application
-    kotlin("jvm") version "2.3.0"
+    kotlin("jvm") version "2.3.10"
     id("org.jmailen.kotlinter") version "5.4.0"
     id("com.github.ben-manes.versions") version "0.53.0"
     id("se.patrikerdes.use-latest-versions") version "0.2.19"
@@ -33,10 +33,10 @@ dependencies {
         exclude(group = "ch.qos.logback", module = "logback-classic")
         exclude(group = "io.github.microutils", module = "kotlin-logging")
     }
-    implementation("ch.qos.logback:logback-classic:1.5.26")
+    implementation("ch.qos.logback:logback-classic:1.5.29")
     implementation("io.github.microutils:kotlin-logging-jvm:3.0.5")
     implementation("net.logstash.logback:logstash-logback-encoder:9.0")
-    testImplementation("org.jetbrains.kotlin:kotlin-test-junit5:2.3.0")
+    testImplementation("org.jetbrains.kotlin:kotlin-test-junit5:2.3.10")
 }
 
 tasks {
