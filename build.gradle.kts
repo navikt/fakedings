@@ -6,7 +6,7 @@ val mainClassKt = "fakedings.ApplicationKt"
 plugins {
     application
     kotlin("jvm") version "2.3.21"
-    id("org.jmailen.kotlinter") version "5.4.2"
+    id("org.jmailen.kotlinter") version "5.5.0"
     id("com.github.ben-manes.versions") version "0.54.0"
     id("se.patrikerdes.use-latest-versions") version "0.2.19"
 }
@@ -29,7 +29,7 @@ repositories {
 dependencies {
     implementation(kotlin("stdlib"))
     implementation(kotlin("reflect"))
-    implementation("no.nav.security:mock-oauth2-server:3.0.1") {
+    implementation("no.nav.security:mock-oauth2-server:3.0.3") {
         exclude(group = "ch.qos.logback", module = "logback-classic")
         exclude(group = "io.github.microutils", module = "kotlin-logging")
     }
