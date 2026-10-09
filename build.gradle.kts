@@ -27,6 +27,7 @@ repositories {
 }
 
 dependencies {
+    implementation(platform("tools.jackson:jackson-bom:3.2.3"))
     implementation(kotlin("stdlib"))
     implementation(kotlin("reflect"))
     implementation("no.nav.security:mock-oauth2-server:6.0.5") {
