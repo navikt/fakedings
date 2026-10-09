@@ -1,0 +1,26 @@
+[versions]
+jackson = "3.2.3"
+kotlinter = "5.7.0"
+kotlin = "2.4.21"
+kotlin-logging = "3.0.5"
+logback = "1.6.5"
+logstash-encoder = "9.0"
+mock-oauth2-server = "6.0.5"
+use-latest-versions-plugin = "0.2.19"
+versions-plugin = "0.65.0"
+
+[libraries]
+jackson-bom = { module = "tools.jackson:jackson-bom", version.ref = "jackson" }
+kotlin-stdlib = { module = "org.jetbrains.kotlin:kotlin-stdlib", version.ref = "kotlin" }
+kotlin-reflect = { module = "org.jetbrains.kotlin:kotlin-reflect", version.ref = "kotlin" }
+kotlin-test-junit5 = { module = "org.jetbrains.kotlin:kotlin-test-junit5", version.ref = "kotlin" }
+kotlin-logging = { module = "io.github.microutils:kotlin-logging-jvm", version.ref = "kotlin-logging" }
+logback-classic = { module = "ch.qos.logback:logback-classic", version.ref = "logback" }
+logstash-encoder = { module = "net.logstash.logback:logstash-logback-encoder", version.ref = "logstash-encoder" }
+mock-oauth2-server = { module = "no.nav.security:mock-oauth2-server", version.ref = "mock-oauth2-server" }
+
+[plugins]
+dependency-updates = { id = "io.github.ben-manes.versions", version.ref = "versions-plugin" }
+kotlin-jvm = { id = "org.jetbrains.kotlin.jvm", version.ref = "kotlin" }
+kotlinter = { id = "org.jmailen.kotlinter", version.ref = "kotlinter" }
+use-latest-versions = { id = "se.patrikerdes.use-latest-versions", version.ref = "use-latest-versions-plugin" }

@@ -5,10 +5,10 @@ val mainClassKt = "fakedings.ApplicationKt"
 
 plugins {
     application
-    kotlin("jvm") version "2.4.21"
-    id("org.jmailen.kotlinter") version "5.7.0"
-    id("io.github.ben-manes.versions") version "0.65.0"
-    id("se.patrikerdes.use-latest-versions") version "0.2.19"
+    alias(libs.plugins.kotlin.jvm)
+    alias(libs.plugins.kotlinter)
+    alias(libs.plugins.dependency.updates)
+    alias(libs.plugins.use.latest.versions)
 }
 
 application {
@@ -27,17 +27,17 @@ repositories {
 }
 
 dependencies {
-    implementation(platform("tools.jackson:jackson-bom:3.2.3"))
-    implementation(kotlin("stdlib"))
-    implementation(kotlin("reflect"))
-    implementation("no.nav.security:mock-oauth2-server:6.0.5") {
+    implementation(platform(libs.jackson.bom))
+    implementation(libs.kotlin.stdlib)
+    implementation(libs.kotlin.reflect)
+    implementation(libs.mock.oauth2.server) {
         exclude(group = "ch.qos.logback", module = "logback-classic")
         exclude(group = "io.github.microutils", module = "kotlin-logging")
     }
-    implementation("ch.qos.logback:logback-classic:1.6.5")
-    implementation("io.github.microutils:kotlin-logging-jvm:3.0.5")
-    implementation("net.logstash.logback:logstash-logback-encoder:9.0")
-    testImplementation("org.jetbrains.kotlin:kotlin-test-junit5:2.4.21")
+    implementation(libs.logback.classic)
+    implementation(libs.kotlin.logging)
+    implementation(libs.logstash.encoder)
+    testImplementation(libs.kotlin.test.junit5)
 }
 
 tasks {
