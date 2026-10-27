@@ -1,13 +1,13 @@
 [versions]
-jackson = "3.2.3"
+jackson = "3.2.4"
 kotlinter = "5.7.0"
 kotlin = "2.4.21"
 kotlin-logging = "3.0.5"
-logback = "1.6.5"
+logback = "1.6.6"
 logstash-encoder = "9.0"
-mock-oauth2-server = "6.0.5"
+mock-oauth2-server = "6.1.3"
 use-latest-versions-plugin = "0.2.19"
-versions-plugin = "0.65.0"
+versions-plugin = "0.66.0"
 
 [libraries]
 jackson-bom = { module = "tools.jackson:jackson-bom", version.ref = "jackson" }
